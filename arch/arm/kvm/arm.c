@@ -45,11 +45,13 @@
 #include <asm/kvm_coproc.h>
 #include <asm/kvm_psci.h>
 
+#include <kvm/arm.h>
+
 #ifdef REQUIRES_VIRT
 __asm__(".arch_extension	virt");
 #endif
 
-static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
+//static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
 static kvm_cpu_context_t __percpu *kvm_host_cpu_state;
 static unsigned long hyp_default_vectors;
 
@@ -1032,7 +1034,6 @@ out_free_context:
 	free_percpu(kvm_host_cpu_state);
 out_free_mappings:
 	free_hyp_pgds();
-out_free_stack_base:
 
 //	for_each_possible_cpu(cpu)
 //		free_page(per_cpu(kvm_arm_hyp_stack_page, cpu));
