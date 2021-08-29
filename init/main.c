@@ -98,7 +98,7 @@
 #endif
 
 #ifdef CONFIG_KVM
-#include <kvm/arm.h> // ARM with KVM preinit code
+#include <linux/arm.h> // ARM with KVM preinit code
 #endif
 
 static int kernel_init(void *);
