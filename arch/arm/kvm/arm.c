@@ -45,7 +45,7 @@
 #include <asm/kvm_coproc.h>
 #include <asm/kvm_psci.h>
 
-#include <kvm/arm.h>
+#include <linux/arm.h>
 
 #ifdef REQUIRES_VIRT
 __asm__(".arch_extension	virt");
