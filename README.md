@@ -10,7 +10,11 @@ For running VMs on your phone, probably Windows 10/11 ARM :)
 Originally from @sleirsgoevy 's patch for SM-A600FN [here](https://github.com/sleirsgoevy/exynos-kvm-patch)
 <br>The XDA discussion can be found [here](https://forum.xda-developers.com/t/is-samsung-galaxy-a6-exynos-7870-suppor-kvm.4295775/)
 
+## Download
+In case you don't want to build it yourself, I have built one for you in [release](https://github.com/raspiduino/sm-a600g-kvm/releases/tag/0.0.1)
+
 ## Building
+- Step 0: Get a Linux PC (or WSL). If you don't have one, use the FREE [Google Cloud Shell](https://shell.cloud.google.com/) with a lot of preinstalled tools (and may also faster than your computer :D)
 - Step 1: Get the toolchain by `git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 && cd aarch64-linux-android-4.9 && git checkout ndk-release-r19`. Also install `bc` if you don't have it yet. On Debian-based distributions use `sudo apt install bc`, on Redhat-based use `sudo rpm install bc`
 - Step 2: Clone this repo by `git clone https://github.com/raspiduino/sm-a600g-kvm`
 - Step 3: Change the directory back to the kernel source by `cd ../sm-a600g-kvm`
@@ -18,7 +22,15 @@ Originally from @sleirsgoevy 's patch for SM-A600FN [here](https://github.com/sl
 - Step 5: Make menuconfig by `make exynos7870-a6lte_defconfig && make menuconfig`
 - Step 6: Goto `Boot options` and then turn off all options which has `TIMA` and `RKP`. Then click exit to go back to main menu. Enable `Virtualization` by pressing the space key. Goto `Virtualization` menu and enable `Kernel-based Virtual Machine (KVM) support`. After that, exit menuconfig and save `.config` file.
 - Step 7: Run `make Image -j8` to build. You can replace `-j8` by `-j[NUMBER OF THREAD TO RUN]`
-- Step 8: Enjoy your kernel! Details about flashing it will be here later :)
+- Step 8: Download [latest Magisk apk](https://github.com/topjohnwu/Magisk/releases/) and change the `.apk` extension to `.zip`. Extract zip and look into `lib` here you can find the binary tools for your architecture. On PC you extract `lib/x86/libmagiskboot.so`
+- Step 9: You need to extract the stock `boot.img` from stock rom. You can get stock rom from [samfw.com](https://samfw.com/) or from my release page :). Then use `magiskboot unpack boot.img`, replace stock kernel with our compiled `Image` in `arch/arm/boot/Image` and repack `boot.img` using `magiskboot repack boot.img new-boot.img`
+- Step 10: Transfer the `new-boot.img` to your Windows PC (to use Odin, in Linux you need [Heimdall](https://github.com/Benjamin-Dobell/Heimdall)) and rename it to `boot.img`. Add the file to tar using 7-zip or `tar` command then load `tar` file to AP in Odin. Flash your phone and when it says `PASS!`, you are doing well!
+- Step 11: It will automatically reboot your phone and come with a screen say "Unable to verify your phone, please reset...", accept and reset it. After reset it will lead you to Android setup, just setup the device but DO NOT set any kind of password or screen lock.
+- Step 12: After get into Android, download and install F-droid, then install Termux and Magisk from F-droid. If Magisk ask for reboot, accept it. After reboot you can now install qemu on Termux and use --enable-kvm. I personally recommend you to clone lastest QEMU source and build on Termux on your phone because precompiled QEMU on Termux's repo is too old.
+- Step 13: Go and try Windows 10 or 11 ARM!
+- Step 14: In case something wrong, you can always reflash stock `boot.img` to undo anything :)
+
+**Remember: If you can get into Download mode in your Samsung phone, it will NEVER brick :)** . I have reflashed my Samsung phone with stock rom 3 times when trying this :) so don't be panic, it WON'T help :)
 
 ### Original Linux 3.x README:
 ```
