@@ -16,8 +16,7 @@ In case you don't want to build it yourself, I have built one for you in [releas
 ## Building
 - Step 0: Get a Linux PC (or WSL). If you don't have one, use the FREE [Google Cloud Shell](https://shell.cloud.google.com/) with a lot of preinstalled tools (and may also faster than your computer :D)
 - Step 1: Get the toolchain by `git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 && cd aarch64-linux-android-4.9 && git checkout ndk-release-r19`. Also install `bc` if you don't have it yet. On Debian-based distributions use `sudo apt install bc`, on Redhat-based use `sudo rpm install bc`
-- Step 2: Clone this repo by `git clone https://github.com/raspiduino/sm-a600g-kvm`
-- Step 3: Change the directory back to the kernel source by `cd ../sm-a600g-kvm`
+- Step 2: Clone this repo by `cd .. && git clone https://github.com/raspiduino/sm-a600g-kvm && cd sm-a600g-kvm`
 - Step 4: Setup environment variable `export CROSS_COMPILE=../aarch64-linux-android-4.9/bin/aarch64-linux-android- ANDROID_MAJOR_VERSION=p ARCH=arm64`
 - Step 5: Make menuconfig by `make exynos7870-a6lte_defconfig && make menuconfig`
 - Step 6: Goto `Boot options` and then turn off all options which has `TIMA` and `RKP`. Then click exit to go back to main menu. Enable `Virtualization` by pressing the space key. Goto `Virtualization` menu and enable `Kernel-based Virtual Machine (KVM) support`. After that, exit menuconfig and save `.config` file.
