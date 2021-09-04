@@ -46,6 +46,7 @@
 #include <asm/kvm_psci.h>
 
 #include <linux/arm.h>
+#include <linux/vmm-kvm.h>
 
 #ifdef REQUIRES_VIRT
 __asm__(".arch_extension	virt");
@@ -809,7 +810,7 @@ long kvm_arch_vm_ioctl(struct file *filp,
 }
 
 static unsigned long hyp_stack_base;
-void vmm_init_kvm(phys_addr_t code, phys_addr_t boot_pgd_ptr, phys_addr_t pgd_ptr, unsigned long hyp_stack_ptr, unsigned long vector_ptr);
+// void vmm_init_kvm(phys_addr_t code, phys_addr_t boot_pgd_ptr, phys_addr_t pgd_ptr, unsigned long hyp_stack_ptr, unsigned long vector_ptr);
 static void cpu_init_hyp_mode(void *dummy)
 {
 	phys_addr_t boot_pgd_ptr;
