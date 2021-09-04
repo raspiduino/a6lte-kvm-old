@@ -1,6 +1,12 @@
+/*
+ * This file is generated from sleirsgoevy 's patch at https://github.com/sleirsgoevy/exynos-kvm-patch
+ * Edited by raspiduino
+*/
+
 #include <linux/types.h>
 #include <asm/memory.h>
 #include <asm/cacheflush.h>
+#include <linux/vmm-kvm.h>
 
 #define VMM_32BIT_SMC_CALL_MAGIC 0x82000400
 #define VMM_64BIT_SMC_CALL_MAGIC 0xC2000400
