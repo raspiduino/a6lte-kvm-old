@@ -4,7 +4,7 @@
 This is the stock kernel source for SM-A600G, originally from [Samsung Opensource page](https://opensource.samsung.com/uploadSearch?searchValue=sm-a600g) with the file `SM-A600G_SEA_PP_Opensource.zip`, and the source has been patched for KVM support (so you can run VMs on your phone with `qemu-kvm`).
 
 ## Why?
-For running VMs on your phone, probably Windows 10/11 ARM :)
+For running VMs on your phone, probably Windows 10/11 ARM :) , but we need to patch the guess OS first. See XDA thread.
 
 ## How?
 Originally from @sleirsgoevy 's patch for SM-A600FN [here](https://github.com/sleirsgoevy/exynos-kvm-patch)
@@ -30,6 +30,9 @@ In case you don't want to build it yourself, I have built one for you in [releas
 - Step 14: In case something wrong, you can always reflash stock `boot.img` to undo anything :)
 
 **Remember: If you can get into Download mode in your Samsung phone, it will NEVER brick :)** . I have reflashed my Samsung phone with stock rom 3 times when trying this :) so don't be panic, it WON'T help :)
+
+## Why root?
+You need root to run KVM or to access `/dev/kvm`
 
 ### Original Linux 3.x README:
 ```
