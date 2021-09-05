@@ -19,7 +19,7 @@ Disclaimer template credit: [XDA forum](https://forum.xda-developers.com/) :)
 
 ## Status
 It worked!
-<br>![KVM on Android](https://user-images.githubusercontent.com/68118236/132128038-6b2da7b5-3533-49c6-991d-104ddd012d99.png)
+<br>![KVM!](https://user-images.githubusercontent.com/68118236/132131451-47ec72d8-f084-42ba-9899-9da26611b9b1.png)
 
 ## What is this?
 This is the stock kernel source for SM-A600G, originally from [Samsung Opensource page](https://opensource.samsung.com/uploadSearch?searchValue=sm-a600g) with the file `SM-A600G_SEA_PP_Opensource.zip`, and the source has been patched for KVM support (so you can run VMs on your phone with `qemu-kvm`).
