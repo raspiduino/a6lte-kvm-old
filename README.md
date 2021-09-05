@@ -2,6 +2,8 @@
 
 Warning: Super long text ahead, be careful not to mess up your brain :))
 
+The FIRST thing to do BEFORE doing ANYTHING is to backup your data!
+
 ## DISCLAIMER
 
 ```
