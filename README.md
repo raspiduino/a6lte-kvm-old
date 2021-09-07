@@ -42,6 +42,7 @@ In case you don't want to build it yourself, I have built one for you in [releas
 - The kernel only detect 4 cores / 8 cores of the Exynos 7870 SoC. I will try to fix this. In the log I can found some lines about `failed to hotplug cpu 4`. Maybe there is something I turn of by mistake when `make menuconfig`. You might not face this.
 - @sleirsgoevy confirm that Linux boot on KVM but require special patch for DTB (device tree blob), Windows not boot (yet).
 - On first boot, Chrome won't work. You have to update Chrome on Google Play, then it will work.
+- There will be some notifications about "Unauthorize action...", just ignore it. It's just Samsung stock ROM detect root. If you feel annoying, try [Security log agent fix](https://play.google.com/store/apps/details?id=disable.securitylogagent.com.securitylogagentfix)
 
 ## Building
 You can use the precompiled and patched img file at [release](https://github.com/raspiduino/sm-a600g-kvm/releases) to skip Building :)
