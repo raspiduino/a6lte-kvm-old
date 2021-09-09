@@ -64,10 +64,10 @@ static void kvm_timer_inject_irq(struct kvm_vcpu *vcpu)
 	int ret;
 	struct arch_timer_cpu *timer = &vcpu->arch.timer_cpu;
 
-	timer->cntv_ctl |= ARCH_TIMER_CTRL_IT_MASK;
-	ret = kvm_vgic_inject_irq(vcpu->kvm, vcpu->vcpu_id,
-				  timer->irq->irq,
-				  timer->irq->level);
+	kvm_vgic_set_phys_irq_active(timer->map, true);
+	ret = kvm_vgic_inject_mapped_irq(vcpu->kvm, vcpu->vcpu_id,
+					 timer->map,
+					 timer->irq->level);
 	WARN_ON(ret);
 }
 
@@ -135,8 +135,9 @@ void kvm_timer_sync_hwstate(struct kvm_vcpu *vcpu)
 	u64 ns;
 
 	if ((timer->cntv_ctl & ARCH_TIMER_CTRL_IT_MASK) ||
-		!(timer->cntv_ctl & ARCH_TIMER_CTRL_ENABLE))
-		return;
+		!(timer->cntv_ctl & ARCH_TIMER_CTRL_ENABLE) ||
+	    kvm_vgic_get_phys_irq_active(timer->map))
+		return false;
 
 	cval = timer->cntv_cval;
 	now = kvm_phys_timer_read() - vcpu->kvm->arch.timer.cntvoff;
@@ -156,10 +157,11 @@ void kvm_timer_sync_hwstate(struct kvm_vcpu *vcpu)
 	timer_arm(timer, ns);
 }
 
-void kvm_timer_vcpu_reset(struct kvm_vcpu *vcpu,
+int kvm_timer_vcpu_reset(struct kvm_vcpu *vcpu,
 			  const struct kvm_irq_level *irq)
 {
 	struct arch_timer_cpu *timer = &vcpu->arch.timer_cpu;
+	struct irq_phys_map *map;
 
 	/*
 	 * The vcpu timer irq number cannot be determined in
@@ -168,11 +170,26 @@ void kvm_timer_vcpu_reset(struct kvm_vcpu *vcpu,
 	 * vcpu timer irq number when the vcpu is reset.
 	 */
 	timer->irq = irq;
+
+	/*
+	 * Tell the VGIC that the virtual interrupt is tied to a
+	 * physical interrupt. We do that once per VCPU.
+	 */
+	map = kvm_vgic_map_phys_irq(vcpu, irq->irq, host_vtimer_irq);
+	if (WARN_ON(IS_ERR(map)))
+		return PTR_ERR(map);
+
+	timer->map = map;
+	return 0;
 }
 
 void kvm_timer_vcpu_init(struct kvm_vcpu *vcpu)
 {
 	struct arch_timer_cpu *timer = &vcpu->arch.timer_cpu;
+
+	timer_disarm(timer);
+	if (timer->map)
+		kvm_vgic_unmap_phys_irq(vcpu, timer->map);
 
 	INIT_WORK(&timer->expired, kvm_timer_inject_irq_work);
 	hrtimer_init(&timer->timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
