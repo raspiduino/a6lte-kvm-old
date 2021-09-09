@@ -58,6 +58,11 @@ You can use the precompiled and patched img file at [release](https://github.com
 - Step 8: You need to extract the stock `boot.img` from stock rom. You can get stock rom from [samfw.com](https://samfw.com/) or from my release page :). Then use `magiskboot unpack boot.img`, replace stock kernel with our compiled `Image` in `arch/arm64/boot/Image` and repack `boot.img` using `magiskboot repack boot.img new-boot.img`
 - Step 9: Open your phone (or any phone), install [latest Magisk apk](https://github.com/topjohnwu/Magisk/releases/). Open the Magisk app, select Install, click Next, choose patch a file, then transfer the new-boot.img to that phone, patch it using Magisk. The output should be in Download folder.
 
+Or all in one line to build but not patch :). I will include the build script later...
+```bash
+git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 && cd aarch64-linux-android-4.9 && git checkout ndk-release-r19 && sudo apt install bc && cd .. && git clone https://github.com/raspiduino/sm-a600g-kvm && cd sm-a600g-kvm && export CROSS_COMPILE=../aarch64-linux-android-4.9/bin/aarch64-linux-android- ANDROID_MAJOR_VERSION=p ARCH=arm64 && make exynos7870-a6lte_defconfig && make menuconfig && make Image -j8
+```
+
 ## Installing
 After get the patched img file, it's now time for installing.
 
