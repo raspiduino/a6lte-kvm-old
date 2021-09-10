@@ -85,13 +85,22 @@ static irqreturn_t kvm_arch_timer_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+/*
+ * Work function for handling the backup timer that we schedule when a vcpu is
+ * no longer running, but had a timer programmed to fire in the future.
+ */
 static void kvm_timer_inject_irq_work(struct work_struct *work)
 {
 	struct kvm_vcpu *vcpu;
 
 	vcpu = container_of(work, struct kvm_vcpu, arch.timer_cpu.expired);
 	vcpu->arch.timer_cpu.armed = false;
-	kvm_timer_inject_irq(vcpu);
+	//kvm_timer_inject_irq(vcpu);
+	/*
+	 * If the vcpu is blocked we want to wake it up so that it will see
+	 * the timer has expired when entering the guest.
+	 */
+	kvm_vcpu_kick(vcpu);
 }
 
 static enum hrtimer_restart kvm_timer_expire(struct hrtimer *hrt)
@@ -100,6 +109,21 @@ static enum hrtimer_restart kvm_timer_expire(struct hrtimer *hrt)
 	timer = container_of(hrt, struct arch_timer_cpu, timer);
 	queue_work(wqueue, &timer->expired);
 	return HRTIMER_NORESTART;
+}
+bool kvm_timer_should_fire(struct kvm_vcpu *vcpu)
+{
+	struct arch_timer_cpu *timer = &vcpu->arch.timer_cpu;
+	cycle_t cval, now;
+
+	if ((timer->cntv_ctl & ARCH_TIMER_CTRL_IT_MASK) ||
+	    !(timer->cntv_ctl & ARCH_TIMER_CTRL_ENABLE) ||
+	    kvm_vgic_get_phys_irq_active(timer->map))
+		return false;
+
+	cval = timer->cntv_cval;
+	now = kvm_phys_timer_read() - vcpu->kvm->arch.timer.cntvoff;
+
+	return cval <= now;
 }
 
 /**
@@ -119,6 +143,13 @@ void kvm_timer_flush_hwstate(struct kvm_vcpu *vcpu)
 	 * populate the CPU timer again.
 	 */
 	timer_disarm(timer);
+
+	/*
+	 * If the timer expired while we were not scheduled, now is the time
+	 * to inject it.
+	 */
+	if (kvm_timer_should_fire(vcpu))
+		kvm_timer_inject_irq(vcpu);
 }
 
 /**
@@ -134,6 +165,7 @@ void kvm_timer_sync_hwstate(struct kvm_vcpu *vcpu)
 	cycle_t cval, now;
 	u64 ns;
 
+#if 0
 	if ((timer->cntv_ctl & ARCH_TIMER_CTRL_IT_MASK) ||
 		!(timer->cntv_ctl & ARCH_TIMER_CTRL_ENABLE) ||
 	    kvm_vgic_get_phys_irq_active(timer->map))
@@ -141,10 +173,11 @@ void kvm_timer_sync_hwstate(struct kvm_vcpu *vcpu)
 
 	cval = timer->cntv_cval;
 	now = kvm_phys_timer_read() - vcpu->kvm->arch.timer.cntvoff;
+#endif
 
 	BUG_ON(timer_is_armed(timer));
 
-	if (cval <= now) {
+	if (kvm_timer_should_fire(vcpu)) {
 		/*
 		 * Timer has already expired while we were not
 		 * looking. Inject the interrupt and carry on.
@@ -153,12 +186,16 @@ void kvm_timer_sync_hwstate(struct kvm_vcpu *vcpu)
 		return;
 	}
 
-	ns = cyclecounter_cyc2ns(timecounter->cc, cval - now);
+	cval = timer->cntv_cval;
+	now = kvm_phys_timer_read() - vcpu->kvm->arch.timer.cntvoff;
+
+	ns = cyclecounter_cyc2ns(timecounter->cc, cval - now, timecounter->mask,
+				 &timecounter->frac);
 	timer_arm(timer, ns);
 }
 
 int kvm_timer_vcpu_reset(struct kvm_vcpu *vcpu,
-			  const struct kvm_irq_level *irq)
+			 const struct kvm_irq_level *irq)
 {
 	struct arch_timer_cpu *timer = &vcpu->arch.timer_cpu;
 	struct irq_phys_map *map;
@@ -187,9 +224,9 @@ void kvm_timer_vcpu_init(struct kvm_vcpu *vcpu)
 {
 	struct arch_timer_cpu *timer = &vcpu->arch.timer_cpu;
 
-	timer_disarm(timer);
-	if (timer->map)
-		kvm_vgic_unmap_phys_irq(vcpu, timer->map);
+	//timer_disarm(timer);
+	//if (timer->map)
+	//	kvm_vgic_unmap_phys_irq(vcpu, timer->map);
 
 	INIT_WORK(&timer->expired, kvm_timer_inject_irq_work);
 	hrtimer_init(&timer->timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
