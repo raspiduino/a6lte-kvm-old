@@ -59,10 +59,13 @@ struct cyclecounter {
  *			timecounter_read()
  * @nsec:		continuously increasing count
  */
+
 struct timecounter {
 	const struct cyclecounter *cc;
-	cycle_t cycle_last;
+	u64 cycle_last;
 	u64 nsec;
+	u64 mask;
+	u64 frac;
 };
 
 /**
@@ -79,6 +82,23 @@ static inline u64 cyclecounter_cyc2ns(const struct cyclecounter *cc,
 	u64 ret = (u64)cycles;
 	ret = (ret * cc->mult) >> cc->shift;
 	return ret;
+}
+
+/**
+ * cyclecounter_cyc2ns_new - converts cycle counter cycles to nanoseconds
+ * @cc:		Pointer to cycle counter.
+ * @cycles:	Cycles
+ * @mask:	bit mask for maintaining the 'frac' field
+ * @frac:	pointer to storage for the fractional nanoseconds.
+ */
+static inline u64 cyclecounter_cyc2ns_new(const struct cyclecounter *cc,
+				      u64 cycles, u64 mask, u64 *frac)
+{
+	u64 ns = (u64) cycles;
+
+	ns = (ns * cc->mult) + *frac;
+	*frac = ns & mask;
+	return ns >> cc->shift;
 }
 
 /**

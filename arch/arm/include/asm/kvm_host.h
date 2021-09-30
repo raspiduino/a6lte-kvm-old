@@ -120,6 +120,7 @@ struct kvm_vcpu_arch {
 	/* VGIC state */
 	struct vgic_cpu vgic_cpu;
 	struct arch_timer_cpu timer_cpu;
+	struct arch_timer_cpu_patch timer_cpu_patch; // Quick and dirty patch :)
 
 	/*
 	 * Anything that is not used directly from assembly code goes
