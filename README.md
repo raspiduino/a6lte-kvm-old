@@ -84,6 +84,7 @@ This instruction will be updated later, so don't worry :)
 - 32-bit ARM (AArch32) not boot
 - Windows and EDK2 for booting Windows not boot yet. I am working on a patch for it.
 - MacOS on ARM is not tested until someone finds a way for booting it on QEMU.
+- ReactOS port for ARM will be tested soon.
 
 ## Why root?
 You need root to run KVM or to access `/dev/kvm`
