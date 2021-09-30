@@ -77,6 +77,14 @@ After get the patched img file, it's now time for installing.
 
 **Remember: If you can get into Download mode in your Samsung phone, it will NEVER brick :)** . I have reflashed my Samsung phone with stock rom 3 times when trying this :) so don't be panic, it WON'T help :)
 
+## Booting OSes on KVM
+This instruction will be updated later, so don't worry :)
+- Linux now boot with a custom DTB. See how to boot [here](Post in thread 'Is Samsung Galaxy A6 (Exynos 7870) suppor KVM?' https://forum.xda-developers.com/t/is-samsung-galaxy-a6-exynos-7870-suppor-kvm.4295775/post-85601873)
+- U-boot with EFI support now boot
+- 32-bit ARM (AArch32) not boot
+- Windows and EDK2 for booting Windows not boot yet. I am working on a patch for it.
+- MacOS on ARM is not tested until someone finds a way for booting it on QEMU.
+
 ## Why root?
 You need root to run KVM or to access `/dev/kvm`
 
@@ -95,7 +103,7 @@ See Linux's License [here](https://github.com/raspiduino/sm-a600g-kvm/blob/main/
 
     Linux is a clone of the operating system Unix, written from scratch by
     Linus Torvalds with assistance from a loosely-knit team of hackers across
-    the Net. It aims towards POSIX and Single UNIX Specification compliance.
+    the Net. It aims towards POSIX and SingleUNIX Specification compliance.
 
     It has all the features you would expect in a modern fully-fledged Unix,
     including true multitasking, virtual memory, shared libraries, demand
