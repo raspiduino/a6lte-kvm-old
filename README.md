@@ -1,5 +1,7 @@
 # Kernel source for SM-A600G (Samsung Galaxy A6 with exynos7870) with KVM support.
 
+# MOVED TO A NEW REPO: https://github.com/raspiduino/a6lte-kvm. THIS REPO IS NO LONGER MAINTAINED!!!
+
 Warning: Super long text ahead, be careful not to mess up your brain :))
 
 The FIRST thing to do BEFORE doing ANYTHING is to backup your data!
